@@ -35,11 +35,15 @@ class ApiHandler(IPythonHandler):
         else:  # mem_limit is an Int
             mem_limit = config.mem_limit
 
+        mem_limit = psutil.virtual_memory()[0] - (0.05 * psutil.virtual_memory()[0])
+
         limits = {"memory": {"rss": mem_limit}}
         if config.mem_limit and config.mem_warning_threshold != 0:
             limits["memory"]["warn"] = (mem_limit - rss) < (
                 mem_limit * config.mem_warning_threshold
             )
+
+        rss = psutil.virtual_memory()[0] - psutil.virtual_memory()[1]
 
         metrics = {"rss": rss, "limits": limits}
 
